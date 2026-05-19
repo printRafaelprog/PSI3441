@@ -33,7 +33,7 @@ int main(void)
     pwm_tpm_Ch_Init(TPM2, 1, TPM_PWM_H, GPIOB, 19);
 
     
-
+    printk("Digite um valor de 0 a 100 para ajustar o brilho dos LEDs:\n");
     // Loop infinito
     while (true){
         char c;
@@ -48,6 +48,7 @@ int main(void)
                 pwm_tpm_CnV(TPM2, 0, duty_50_R);
                 pwm_tpm_CnV(TPM2, 1, duty_50_G);
                 buf_ptr = 0;
+                printk("Digite um valor de 0 a 100 para ajustar o brilho dos LEDs:\n");
                 }
             else{
                 if(buf_ptr < sizeof(rx_buf) - 1) rx_buf[buf_ptr++] = c;
