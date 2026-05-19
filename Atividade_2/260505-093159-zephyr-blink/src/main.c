@@ -22,72 +22,37 @@ int main(void)
         return 1;
     }
 
-    char rx_buf[16];
+    char rx_buf[32];
     int buf_ptr = 0;
-
-    // Inicializa o módulo TPM2 com:
-    // - base do TPMx
-    // - fonte de clock PLL/FLL (TPM_CLK)
-    // - valor do registrador MOD
-    // - tipo de clock (TPM_CLK)
-    // - prescaler de 1 a 128 (PS)
-    // - modo de operação EDGE_PWM
     float porcentagem = 0.0;
-    float divisor_R = 1 + 1*porcentagem;
-    float divisor_G = 1 + 1*porcentagem/2;
-    uint16_t duty_50_R  = TPM_MODULE/divisor_R;
-    uint16_t duty_50_G  = TPM_MODULE/divisor_G;
-    pwm_tpm_Init(TPM2, TPM_OSCERCLK, TPM_MODULE, TPM_CLK, PS_128, EDGE_PWM);
+    uint16_t duty_50_R;
+    uint16_t duty_50_G;
 
-    // Inicializa o canal 0 do TPM2 para gerar sinal PWM na porta GPIOB_18
-    // - modo TPM_PWM_H (nível alto durante o pulso)
+    pwm_tpm_Init(TPM2, TPM_OSCERCLK, TPM_MODULE, TPM_CLK, PS_128, EDGE_PWM);
     pwm_tpm_Ch_Init(TPM2, 0, TPM_PWM_H, GPIOB, 18);
     pwm_tpm_Ch_Init(TPM2, 1, TPM_PWM_H, GPIOB, 19);
 
-    // Define o valor do duty cycle: nesse caso, duty_100 (LED quase desligado)
     
 
     // Loop infinito
     while (true){
-        uint8_t c;
-        if (uart_poll_in(uart_dev, &c) == 0){
-            if(c == '\r'){
-                continue;
-            }
-            uart_poll_out(uart_dev, c);
+        char c;
+        while (uart_poll_in(uart_dev, &c) == 0){
             if(c == '\n' || c == '\r'){
-
                 rx_buf[buf_ptr] = '\0';
-                if(buf_ptr>0){
-                    int porcentagem = atoi(rx_buf);
-                    if(porcentagem < 0) porcentagem = 0;
-                    if (porcentagem > 100) porcentagem = 100;
-                    divisor_R = 1 + 1*porcentagem/100;
-                    divisor_G = 1 + 1*porcentagem/200;
-                    duty_50_R = TPM_MODULE/divisor_R;
-                    duty_50_G = TPM_MODULE/divisor_G;
-                    printk("rodei");
-                    pwm_tpm_CnV(TPM2, 0, duty_50_R);
-                    pwm_tpm_CnV(TPM2, 1, duty_50_G);
-
-                    
-                }
+                int porcentagem = atoi(rx_buf);
+                if(porcentagem < 0) porcentagem = 0;
+                if (porcentagem > 100) porcentagem = 100;
+                duty_50_R = - TPM_MODULE*(porcentagem/100.0) + TPM_MODULE;
+                duty_50_G = - TPM_MODULE*(porcentagem/100.0) + TPM_MODULE;
+                pwm_tpm_CnV(TPM2, 0, duty_50_R);
+                pwm_tpm_CnV(TPM2, 1, duty_50_G);
                 buf_ptr = 0;
-                memset(rx_buf, 0, sizeof(rx_buf));
-                
-                        
-                    }
-                
-            
+                }
             else{
-                    if((c >= '0') && (c <= '9')){
-                        if(buf_ptr < sizeof(rx_buf)-1){
-                            rx_buf[buf_ptr++] = c;
-                        }
-                    }   
-                 }
+                if(buf_ptr < sizeof(rx_buf) - 1) rx_buf[buf_ptr++] = c;
             }
-    
+        }               
     }
     return 0;
 }
