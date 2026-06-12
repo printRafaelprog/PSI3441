@@ -73,7 +73,7 @@ void minha_thread(void *arg1, void *arg2, void *arg3) {
 
 K_THREAD_DEFINE(minha_tid, STACK_SIZE, minha_thread,
                 NULL, NULL, NULL,
-                PRIORITY, 0, 0);
+                6, 0, 0);
 
 
 void accel_task(void *arg1, void *arg2, void *arg3) {

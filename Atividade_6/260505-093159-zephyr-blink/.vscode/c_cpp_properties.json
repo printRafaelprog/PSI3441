@@ -10,8 +10,6 @@
             "includePath": [
                 "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/include",
                 "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/src",
-                "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/lib/ultrasom",
-                "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/lib/pwm",
                 "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated/zephyr",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/include",
                 "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated",
@@ -25,8 +23,12 @@
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk/devices/MKL25Z4",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk/devices/MKL25Z4/drivers",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/common",
+                "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/adc16",
+                "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/i2c",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/lpsci",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/port",
+                "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/lib/pwm",
+                "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/lib/ultrasom",
                 ""
             ],
             "browse": {
@@ -34,8 +36,6 @@
                 "path": [
                     "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/include",
                     "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/src",
-                    "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/lib/ultrasom",
-                    "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/lib/pwm",
                     "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated/zephyr",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/include",
                     "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated",
@@ -49,8 +49,12 @@
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk/devices/MKL25Z4",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk/devices/MKL25Z4/drivers",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/common",
+                    "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/adc16",
+                    "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/i2c",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/lpsci",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/port",
+                    "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/lib/pwm",
+                    "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/lib/ultrasom",
                     ""
                 ]
             },
