@@ -43,7 +43,9 @@ uint32_t t0;
 
 float accel_fx, accel_fy, accel_fz;
 
-float accel_x[51] = {0};
+float accel_x_vec[51] = {0};
+float accel_y_vec[51] = {0};
+float accel_z_vec[51] = {0};
 
 float bs[51] = {
 
@@ -54,16 +56,15 @@ float bs[51] = {
     0.2244,    0.1570,    0.0727,    0.0000,   -0.0411,   -0.0465,   -0.0268,   -0.0000,    0.0184,    0.0217,    0.0128,    0.0000,   -0.0089,
 
    -0.0103,   -0.0060,   -0.0000,    0.0039,    0.0044,    0.0024,    0.0000,   -0.0015,   -0.0016,   -0.0009,   -0.0000,    0.0007
-}
+};
 
-float fir(float x){
+float fir(float x[51]){
     float x_filtrado = 0;
     for (int i = 0; i<51; ++i){
-        x_filtrado = x_filtrado + bs[i]*x[i]
+        x_filtrado = x_filtrado + bs[i]*x[i];
     }
     return x_filtrado;
 }
-
 void mma8451q_configurar_odr(void)
 {
     uint8_t buf[2];
@@ -105,6 +106,7 @@ K_SEM_DEFINE(coleta, 0, 1);
 
 void comunicacao(void *arg1, void *arg2, void *arg3) {
         // Formato: T: tempo_ms, X: valor, Y: valor, Z: valor
+        float fir();
         while(1){
             k_sem_take(&coleta, K_FOREVER);
             k_mutex_lock(&print_mutex, K_FOREVER);
@@ -118,10 +120,10 @@ void comunicacao(void *arg1, void *arg2, void *arg3) {
                 contador = 0;
                 t0 = agora;
             }
-            accel_fx = fir(accel_x.val1 + abs(accel_x.val2)/1000000);
-            accel_fy = fir(accel_y.val1 + abs(accel_y.val2)/1000000);
-            accel_fz = fir(accel_z.val1 + abs(accel_z.val2)/1000000);
-            printk("%d.%06d, %d.%06d, %d.%06d\r\n", 
+            accel_fx = fir(accel_x_vec);
+            accel_fy = fir(accel_y_vec);
+            accel_fz = fir(accel_z_vec);
+            printk("%f, %f, %f\r\n", 
                accel_fx,
                accel_fy,
                accel_fz);
@@ -145,6 +147,9 @@ void accel_task(void *arg1, void *arg2, void *arg3) {
         return;
     }
     k_mutex_unlock(&print_mutex);
+    
+    int id = 0;
+
     while (1) {
         // Solicitar leitura do sensor
         k_mutex_lock(&print_mutex, K_FOREVER);
@@ -159,8 +164,17 @@ void accel_task(void *arg1, void *arg2, void *arg3) {
         sensor_channel_get(accel, SENSOR_CHAN_ACCEL_X, &accel_x);
         sensor_channel_get(accel, SENSOR_CHAN_ACCEL_Y, &accel_y);
         sensor_channel_get(accel, SENSOR_CHAN_ACCEL_Z, &accel_z);
-
-
+         
+        accel_x_vec[id] = accel_x.val1/1.0f + abs(accel_x.val2)/1000000.0f;
+        accel_y_vec[id] = accel_y.val1/1.0f + abs(accel_y.val2)/1000000.0f;
+        accel_z_vec[id] = accel_z.val1/1.0f + abs(accel_z.val2)/1000000.0f;
+        
+        if(id == 50){
+            id = 0;
+        }
+        else{
+            id = id + 1;
+        }
         k_mutex_unlock(&print_mutex);
         k_sem_give(&coleta);
         // Aguardar 1000ms antes da próxima leitura
