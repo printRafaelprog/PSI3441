@@ -5,6 +5,11 @@
 #include <zephyr/drivers/sensor.h>
 #include <zephyr/drivers/gpio.h>
 
+#include <zephyr/drivers/i2c.h>
+#include <zephyr/sys/printk.h>
+#include <stdlib.h>
+
+
 #define STACK_SIZE 1024
 #define PRIORITY 5
 
@@ -17,96 +22,136 @@
 #define ADC_VREF_MV         3300
 #define BUTTON_NODE DT_NODELABEL(user_button_0)
 
-static int16_t sample_buffer;
-//obter referencia do dispositivo
-static const struct device *const accel = DEVICE_DT_GET(DT_NODELABEL(mma8451q));
-static const struct gpio_dt_spec button = GPIO_DT_SPEC_GET(BUTTON_NODE, gpios);
-static struct gpio_callback button_cb_data;
+// === Endereço e registradores do MMA8451Q ===
+#define MMA8451Q_I2C_ADDR    0x1D
+#define MMA8451Q_CTRL_REG1   0x2A
 
-volatile bool estado_botao = false; //botao desarpedado
+// === Bits de configuração ===
+#define MMA8451Q_ACTIVE_BIT  0x01
+#define MMA8451Q_ODR   (0x0 << 3)  // 100 Hz conforme datasheet (DR=100b)
 
-void minha_thread(void *arg1, void *arg2, void *arg3) {
-      //ADC
-    const struct device *adc_dev = DEVICE_DT_GET(DT_NODELABEL(adc0));
-    if (!device_is_ready(adc_dev)) {
-        printk("ADC não está pronto\n");
-        return;
-    }
 
-    struct adc_channel_cfg channel_cfg = {
-        .gain = ADC_GAIN,
-        .reference = ADC_REFERENCE,
-        .acquisition_time = ADC_ACQUISITION_TIME,
-        .channel_id = ADC_CHANNEL_ID,
-        .differential = 0,
-    };
+struct sensor_value accel_x, accel_y, accel_z;
+int ret;
 
-    if (adc_channel_setup(adc_dev, &channel_cfg) != 0) {
-        printk("Erro ao configurar canal ADC\n");
-        return;
-    }
+// === Obter dispositivos ===
+static const struct device *const accel = DEVICE_DT_GET(DT_ALIAS(accel0));
+static const struct device *const i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c0));
 
-    struct adc_sequence sequence = {
-        .channels    = BIT(ADC_CHANNEL_ID),
-        .buffer      = &sample_buffer,
-        .buffer_size = sizeof(sample_buffer),
-        .resolution  = ADC_RESOLUTION,
-    };
+uint32_t contador = 0;
+uint32_t t0;
 
-   
-    while (1) {
- 
-        //ADC
-         int err = adc_read(adc_dev, &sequence);
-        if (err != 0) {
-            printk("Falha na leitura do ADC: %d\n", err);
-        } else {
-            int32_t mv = sample_buffer;
-            adc_raw_to_millivolts(ADC_VREF_MV, ADC_GAIN, ADC_RESOLUTION, &mv);
-            printk("ADC: %d (raw), %d mV\n", sample_buffer, mv);
-        }
+float accel_fx, accel_fy, accel_fz;
 
-        //Wait
-        k_sleep(K_SECONDS(0.5));
-    }
+float accel_x[51] = {0};
+
+float bs[51] = {
+
+    0.0007,   -0.0000,   -0.0009,   -0.0016,   -0.0015,    0.0000,    0.0024,    0.0044,    0.0039,   -0.0000,   -0.0060,   -0.0103,   -0.0089,
+
+    0.0000,    0.0128,    0.0217,    0.0184,   -0.0000,   -0.0268,   -0.0465,   -0.0411,    0.0000,    0.0727,    0.1570,    0.2244,    0.2502,
+
+    0.2244,    0.1570,    0.0727,    0.0000,   -0.0411,   -0.0465,   -0.0268,   -0.0000,    0.0184,    0.0217,    0.0128,    0.0000,   -0.0089,
+
+   -0.0103,   -0.0060,   -0.0000,    0.0039,    0.0044,    0.0024,    0.0000,   -0.0015,   -0.0016,   -0.0009,   -0.0000,    0.0007
 }
 
-K_THREAD_DEFINE(minha_tid, STACK_SIZE, minha_thread,
+float fir(float x){
+    float x_filtrado = 0;
+    for (int i = 0; i<51; ++i){
+        x_filtrado = x_filtrado + bs[i]*x[i]
+    }
+    return x_filtrado;
+}
+
+void mma8451q_configurar_odr(void)
+{
+    uint8_t buf[2];
+    int ret;
+
+    // 1️⃣ Colocar o sensor em standby (necessário antes de mudar ODR)
+    buf[0] = MMA8451Q_CTRL_REG1;
+    buf[1] = 0x00;
+    ret = i2c_write(i2c_dev, buf, 2, MMA8451Q_I2C_ADDR);
+    if (ret) {
+        printk("ERRO ao colocar MMA8451Q em standby (%d)\n", ret);
+        return;
+    }
+
+    // 2️⃣ Configurar ODR = 100 Hz (bits DR[5:3] = 100)
+    buf[0] = MMA8451Q_CTRL_REG1;
+    buf[1] = MMA8451Q_ODR;
+    ret = i2c_write(i2c_dev, buf, 2, MMA8451Q_I2C_ADDR);
+    if (ret) {
+        printk("ERRO ao configurar ODR (%d)\n", ret);
+        return;
+    }
+
+    // 3️⃣ Ativar o sensor novamente
+    buf[0] = MMA8451Q_CTRL_REG1;
+    buf[1] = MMA8451Q_ODR | MMA8451Q_ACTIVE_BIT;
+    ret = i2c_write(i2c_dev, buf, 2, MMA8451Q_I2C_ADDR);
+    if (ret) {
+        printk("ERRO ao ativar MMA8451Q (%d)\n", ret);
+        return;
+    }
+
+    printk("MMA8451Q configurado para 100 Hz via I2C.\n");
+}
+
+
+K_MUTEX_DEFINE(print_mutex);
+K_SEM_DEFINE(coleta, 0, 1);
+
+void comunicacao(void *arg1, void *arg2, void *arg3) {
+        // Formato: T: tempo_ms, X: valor, Y: valor, Z: valor
+        while(1){
+            k_sem_take(&coleta, K_FOREVER);
+            k_mutex_lock(&print_mutex, K_FOREVER);
+            contador++;
+
+            uint32_t agora = k_uptime_get_32();
+
+            if (agora - t0 >= 1000) {
+                //printk("Taxa: %u prints/s\n", contador);
+
+                contador = 0;
+                t0 = agora;
+            }
+            accel_fx = fir(accel_x.val1 + abs(accel_x.val2)/1000000);
+            accel_fy = fir(accel_y.val1 + abs(accel_y.val2)/1000000);
+            accel_fz = fir(accel_z.val1 + abs(accel_z.val2)/1000000);
+            printk("%d.%06d, %d.%06d, %d.%06d\r\n", 
+               accel_fx,
+               accel_fy,
+               accel_fz);
+            k_mutex_unlock(&print_mutex);
+        }
+        
+}
+
+K_THREAD_DEFINE(comunicacao_task, STACK_SIZE, comunicacao,
                 NULL, NULL, NULL,
                 PRIORITY, 0, 0);
 
 
 void accel_task(void *arg1, void *arg2, void *arg3) {
-    struct sensor_value accel_x, accel_y, accel_z;
-    int ret;
-    uint32_t tempo_ms = 0;  // Contador de tempo em milissegundos
 
-    printk("\n");
-    printk("========================================\n");
-    printk("  FRDM-KL25Z - Acelerometro MMA8451Q\n");
-    printk("========================================\n");
-    printk("I2C0: PTE24 (SCL), PTE25 (SDA)\n");
-    printk("========================================\n\n");
 
+    k_mutex_lock(&print_mutex, K_FOREVER);
     // Verificar se o dispositivo está pronto
     if (!device_is_ready(accel)) {
         printk("ERRO: Acelerometro nao esta pronto!\n");
         return;
     }
-
-    printk("Acelerometro inicializado com sucesso!\n");
-    printk("Iniciando leituras a cada 500ms...\n\n");
-    
-    // Pequeno delay antes de começar a enviar dados
-    k_sleep(K_MSEC(1000));
-
+    k_mutex_unlock(&print_mutex);
     while (1) {
         // Solicitar leitura do sensor
+        k_mutex_lock(&print_mutex, K_FOREVER);
         ret = sensor_sample_fetch(accel);
         if (ret) {
             printk("Erro ao ler sensor: %d\n", ret);
             k_sleep(K_MSEC(500));
-            tempo_ms += 500;
             continue;
         }
 
@@ -115,16 +160,10 @@ void accel_task(void *arg1, void *arg2, void *arg3) {
         sensor_channel_get(accel, SENSOR_CHAN_ACCEL_Y, &accel_y);
         sensor_channel_get(accel, SENSOR_CHAN_ACCEL_Z, &accel_z);
 
-        // Formato: T: tempo_ms, X: valor, Y: valor, Z: valor
-        printk("T: %u, X: %d.%06d, Y: %d.%06d, Z: %d.%06d\r\n", 
-               tempo_ms,
-               accel_x.val1, abs(accel_x.val2),
-               accel_y.val1, abs(accel_y.val2),
-               accel_z.val1, abs(accel_z.val2));
 
+        k_mutex_unlock(&print_mutex);
+        k_sem_give(&coleta);
         // Aguardar 1000ms antes da próxima leitura
-        k_sleep(K_MSEC(1000));
-        tempo_ms += 1000;
     }
 }
 
@@ -133,23 +172,11 @@ K_THREAD_DEFINE(thread_accel, STACK_SIZE, accel_task,
                 NULL, NULL, NULL,
                 PRIORITY, 0, 0);
 
-// ISR - Toggle LED
-void button_isr(const struct device *dev, struct gpio_callback *cb, uint32_t pins)
-{
-    estado_botao = !estado_botao;
-    if (estado_botao) k_thread_suspend(thread_accel);
-    else k_thread_resume(thread_accel);
-}
-
 
 int main(void)
 {
-  gpio_pin_configure_dt(&button, GPIO_INPUT | GPIO_PULL_UP);
-  
-  // Configurar interrupção na borda de descida
-  gpio_pin_interrupt_configure_dt(&button, GPIO_INT_EDGE_BOTH);
-  gpio_init_callback(&button_cb_data, button_isr, BIT(button.pin));
-  gpio_add_callback(button.port, &button_cb_data);
+  t0 = k_uptime_get_32();
+  mma8451q_configurar_odr();
   return 0;
 }
 

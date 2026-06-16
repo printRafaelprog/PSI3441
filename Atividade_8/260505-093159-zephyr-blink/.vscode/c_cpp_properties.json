@@ -8,13 +8,11 @@
         {
             "name": "PlatformIO",
             "includePath": [
-                "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/include",
-                "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/src",
-                "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/lib/ultrasom",
-                "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/lib/pwm",
-                "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated/zephyr",
+                "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/include",
+                "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/src",
+                "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated/zephyr",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/include",
-                "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated",
+                "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/soc/nxp/kinetis",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/lib/libc/newlib/include",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/soc/nxp/kinetis/kl2x",
@@ -25,20 +23,22 @@
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk/devices/MKL25Z4",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk/devices/MKL25Z4/drivers",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/common",
+                "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/adc16",
+                "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/i2c",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/lpsci",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/port",
+                "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/lib/pwm",
+                "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/lib/ultrasom",
                 ""
             ],
             "browse": {
                 "limitSymbolsToIncludedHeaders": true,
                 "path": [
-                    "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/include",
-                    "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/src",
-                    "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/lib/ultrasom",
-                    "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/lib/pwm",
-                    "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated/zephyr",
+                    "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/include",
+                    "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/src",
+                    "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated/zephyr",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/include",
-                    "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated",
+                    "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/soc/nxp/kinetis",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/lib/libc/newlib/include",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/soc/nxp/kinetis/kl2x",
@@ -49,8 +49,12 @@
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk/devices/MKL25Z4",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk/devices/MKL25Z4/drivers",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/common",
+                    "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/adc16",
+                    "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/i2c",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/lpsci",
                     "C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/port",
+                    "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/lib/pwm",
+                    "c:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/lib/ultrasom",
                     ""
                 ]
             },
@@ -68,7 +72,7 @@
             ],
             "cStandard": "c99",
             "forcedInclude": [
-                "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_6/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated/zephyr/autoconf.h",
+                "C:/Users/Aluno/Documents/PSI3441/PSI3441/Atividade_8/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated/zephyr/autoconf.h",
                 "C:/Users/Aluno/.platformio/packages/framework-zephyr/include/zephyr/toolchain/zephyr_stdint.h",
                 ""
             ],
