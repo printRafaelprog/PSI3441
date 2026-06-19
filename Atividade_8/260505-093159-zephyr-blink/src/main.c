@@ -9,9 +9,12 @@
 #include <zephyr/sys/printk.h>
 #include <stdlib.h>
 
+//#include <zephyr/logging/log.h>
+
 
 #define STACK_SIZE 1024
 #define PRIORITY 5
+//#define UART_BAUDRATE 230400
 
 //ADC
 #define ADC_RESOLUTION      12
@@ -28,8 +31,8 @@
 
 // === Bits de configuração ===
 #define MMA8451Q_ACTIVE_BIT  0x01
-#define MMA8451Q_ODR   (0x0 << 3)  // 100 Hz conforme datasheet (DR=100b)
-
+#define MMA8451Q_ODR   (0x1 << 1)  // 100 Hz conforme datasheet (DR=100b)
+#define ORDER 11
 
 struct sensor_value accel_x, accel_y, accel_z;
 int ret;
@@ -41,26 +44,25 @@ static const struct device *const i2c_dev = DEVICE_DT_GET(DT_NODELABEL(i2c0));
 uint32_t contador = 0;
 uint32_t t0;
 
+
+int id = 0;
+
 float accel_fx, accel_fy, accel_fz;
 
-float accel_x_vec[51] = {0};
-float accel_y_vec[51] = {0};
-float accel_z_vec[51] = {0};
+float accel_x_vec[ORDER] = {0};
+float accel_y_vec[ORDER] = {0};
+float accel_z_vec[ORDER] = {0};
 
-float bs[51] = {
+//LOG_MODULE_REGISTER(meu_modulo, LOG_LEVEL_INF);
 
-    0.0007,   -0.0000,   -0.0009,   -0.0016,   -0.0015,    0.0000,    0.0024,    0.0044,    0.0039,   -0.0000,   -0.0060,   -0.0103,   -0.0089,
+float bs[ORDER] = {
 
-    0.0000,    0.0128,    0.0217,    0.0184,   -0.0000,   -0.0268,   -0.0465,   -0.0411,    0.0000,    0.0727,    0.1570,    0.2244,    0.2502,
-
-    0.2244,    0.1570,    0.0727,    0.0000,   -0.0411,   -0.0465,   -0.0268,   -0.0000,    0.0184,    0.0217,    0.0128,    0.0000,   -0.0089,
-
-   -0.0103,   -0.0060,   -0.0000,    0.0039,    0.0044,    0.0024,    0.0000,   -0.0015,   -0.0016,   -0.0009,   -0.0000,    0.0007
+      -0.0039,   0.0000,    0.0321,    0.1167,    0.2207,    0.2687,    0.2207,    0.1167,    0.0321,    0.0000,   -0.0039,
 };
 
-float fir(float x[51]){
+float fir(float x[ORDER]){
     float x_filtrado = 0;
-    for (int i = 0; i<51; ++i){
+    for (int i = 0; i< ORDER ;  ++i){
         x_filtrado = x_filtrado + bs[i]*x[i];
     }
     return x_filtrado;
@@ -120,13 +122,23 @@ void comunicacao(void *arg1, void *arg2, void *arg3) {
                 contador = 0;
                 t0 = agora;
             }
-            accel_fx = fir(accel_x_vec);
-            accel_fy = fir(accel_y_vec);
-            accel_fz = fir(accel_z_vec);
+            // LOG_INF("%f, %f, %f\r\n", 
+            //    accel_fx,
+            //   accel_fy,
+            //   accel_fz);
+
+            // LOG_INF("%f, %f, %f\r\n", 
+            //    accel_x_vec[id],
+            //    accel_y_vec[id],
+            //    accel_z_vec[id]);
             printk("%f, %f, %f\r\n", 
-               accel_fx,
-               accel_fy,
-               accel_fz);
+               accel_x_vec[id],
+               accel_y_vec[id],
+               accel_z_vec[id]);
+            // printk("%f, %f, %f\r\n", 
+            //   accel_fx,
+            //   accel_fy,
+            //   accel_fz);
             k_mutex_unlock(&print_mutex);
         }
         
@@ -148,7 +160,6 @@ void accel_task(void *arg1, void *arg2, void *arg3) {
     }
     k_mutex_unlock(&print_mutex);
     
-    int id = 0;
 
     while (1) {
         // Solicitar leitura do sensor
@@ -169,12 +180,15 @@ void accel_task(void *arg1, void *arg2, void *arg3) {
         accel_y_vec[id] = accel_y.val1/1.0f + abs(accel_y.val2)/1000000.0f;
         accel_z_vec[id] = accel_z.val1/1.0f + abs(accel_z.val2)/1000000.0f;
         
-        if(id == 50){
+        if(id == ORDER - 1){
             id = 0;
         }
         else{
             id = id + 1;
         }
+        // accel_fx = fir(accel_x_vec);
+        // accel_fy = fir(accel_y_vec);
+        // accel_fz = fir(accel_z_vec);
         k_mutex_unlock(&print_mutex);
         k_sem_give(&coleta);
         // Aguardar 1000ms antes da próxima leitura
@@ -185,6 +199,7 @@ void accel_task(void *arg1, void *arg2, void *arg3) {
 K_THREAD_DEFINE(thread_accel, STACK_SIZE, accel_task,
                 NULL, NULL, NULL,
                 PRIORITY, 0, 0);
+
 
 
 int main(void)

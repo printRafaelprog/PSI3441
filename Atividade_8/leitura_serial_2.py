@@ -12,7 +12,7 @@ from matplotlib.animation import FuncAnimation
 # ==========================
 
 PORTA = "COM11"          # Altere para sua porta
-BAUDRATE = 115200
+BAUDRATE = 250000
 
 N_PONTOS = 500
 
@@ -33,6 +33,8 @@ def ler_serial():
     contador = 0
     inicio = time.time()
 
+    # arquivo = open("acelerometro.txt", "w")
+
     while True:
         try:
             linha = ser.readline().decode("utf-8").strip()
@@ -45,6 +47,12 @@ def ler_serial():
             # Espera X,Y,Z
             if len(valores) >= 3:
                 fila.put(valores[:3])
+
+                ax_g, ay_g, az_g = valores[:3]
+
+                # salva no arquivo
+                # arquivo.write(f"{ax_g}\t{ay_g}\t{az_g}\n")
+                # arquivo.flush()  # garante gravação imediata
 
                 contador += 1
 
