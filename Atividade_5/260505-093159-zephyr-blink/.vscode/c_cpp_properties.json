@@ -10,6 +10,7 @@
             "includePath": [
                 "C:/Users/rafae/Documents/Documentos/PSI3441/Atividade_5/260505-093159-zephyr-blink/include",
                 "C:/Users/rafae/Documents/Documentos/PSI3441/Atividade_5/260505-093159-zephyr-blink/src",
+                "C:/Users/rafae/Documents/Documentos/PSI3441/Atividade_5/260505-093159-zephyr-blink/lib/ultrasom",
                 "C:/Users/rafae/Documents/Documentos/PSI3441/Atividade_5/260505-093159-zephyr-blink/lib/pwm",
                 "C:/Users/rafae/Documents/Documentos/PSI3441/Atividade_5/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated/zephyr",
                 "C:/Users/rafae/.platformio/packages/framework-zephyr/include",
@@ -26,7 +27,6 @@
                 "C:/Users/rafae/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/common",
                 "C:/Users/rafae/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/lpsci",
                 "C:/Users/rafae/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/port",
-                "C:/Users/rafae/Documents/Documentos/PSI3441/Atividade_5/260505-093159-zephyr-blink/lib/ultrasom",
                 ""
             ],
             "browse": {
@@ -34,6 +34,7 @@
                 "path": [
                     "C:/Users/rafae/Documents/Documentos/PSI3441/Atividade_5/260505-093159-zephyr-blink/include",
                     "C:/Users/rafae/Documents/Documentos/PSI3441/Atividade_5/260505-093159-zephyr-blink/src",
+                    "C:/Users/rafae/Documents/Documentos/PSI3441/Atividade_5/260505-093159-zephyr-blink/lib/ultrasom",
                     "C:/Users/rafae/Documents/Documentos/PSI3441/Atividade_5/260505-093159-zephyr-blink/lib/pwm",
                     "C:/Users/rafae/Documents/Documentos/PSI3441/Atividade_5/260505-093159-zephyr-blink/.pio/build/frdm_kl25z/zephyr/include/generated/zephyr",
                     "C:/Users/rafae/.platformio/packages/framework-zephyr/include",
@@ -50,7 +51,6 @@
                     "C:/Users/rafae/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/common",
                     "C:/Users/rafae/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/lpsci",
                     "C:/Users/rafae/.platformio/packages/framework-zephyr/_pio/modules/hal/nxp/mcux/mcux-sdk-ng/drivers/port",
-                    "C:/Users/rafae/Documents/Documentos/PSI3441/Atividade_5/260505-093159-zephyr-blink/lib/ultrasom",
                     ""
                 ]
             },
