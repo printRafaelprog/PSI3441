@@ -4,14 +4,14 @@ from queue import Queue, Empty
 from collections import deque
 import time
 
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt 
 from matplotlib.animation import FuncAnimation
 
 # ==========================
 # CONFIGURAÇÕES
 # ==========================
 
-PORTA = "COM11"          # Altere para sua porta
+PORTA = "COM5"          # Altere para sua porta
 BAUDRATE = 250000
 
 N_PONTOS = 500

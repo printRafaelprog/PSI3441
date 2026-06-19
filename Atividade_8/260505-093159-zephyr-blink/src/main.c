@@ -9,12 +9,12 @@
 #include <zephyr/sys/printk.h>
 #include <stdlib.h>
 
-//#include <zephyr/logging/log.h>
+#include <zephyr/logging/log.h>
 
 
 #define STACK_SIZE 1024
 #define PRIORITY 5
-//#define UART_BAUDRATE 230400
+
 
 //ADC
 #define ADC_RESOLUTION      12
@@ -31,7 +31,7 @@
 
 // === Bits de configuração ===
 #define MMA8451Q_ACTIVE_BIT  0x01
-#define MMA8451Q_ODR   (0x1 << 1)  // 100 Hz conforme datasheet (DR=100b)
+#define MMA8451Q_ODR   (0x00 << 3)  
 #define ORDER 11
 
 struct sensor_value accel_x, accel_y, accel_z;
@@ -53,7 +53,7 @@ float accel_x_vec[ORDER] = {0};
 float accel_y_vec[ORDER] = {0};
 float accel_z_vec[ORDER] = {0};
 
-//LOG_MODULE_REGISTER(meu_modulo, LOG_LEVEL_INF);
+LOG_MODULE_REGISTER(meu_modulo, LOG_LEVEL_INF);
 
 float bs[ORDER] = {
 
@@ -131,14 +131,14 @@ void comunicacao(void *arg1, void *arg2, void *arg3) {
             //    accel_x_vec[id],
             //    accel_y_vec[id],
             //    accel_z_vec[id]);
-            printk("%f, %f, %f\r\n", 
-               accel_x_vec[id],
-               accel_y_vec[id],
-               accel_z_vec[id]);
             // printk("%f, %f, %f\r\n", 
-            //   accel_fx,
-            //   accel_fy,
-            //   accel_fz);
+            //    accel_x_vec[id],
+            //    accel_y_vec[id],
+            //    accel_z_vec[id]);
+            printk("%f, %f, %f\r\n", 
+              accel_fx,
+              accel_fy,
+              accel_fz);
             k_mutex_unlock(&print_mutex);
         }
         
@@ -186,12 +186,12 @@ void accel_task(void *arg1, void *arg2, void *arg3) {
         else{
             id = id + 1;
         }
-        // accel_fx = fir(accel_x_vec);
-        // accel_fy = fir(accel_y_vec);
-        // accel_fz = fir(accel_z_vec);
+        accel_fx = fir(accel_x_vec);
+        accel_fy = fir(accel_y_vec);
+        accel_fz = fir(accel_z_vec);
         k_mutex_unlock(&print_mutex);
         k_sem_give(&coleta);
-        // Aguardar 1000ms antes da próxima leitura
+        
     }
 }
 
