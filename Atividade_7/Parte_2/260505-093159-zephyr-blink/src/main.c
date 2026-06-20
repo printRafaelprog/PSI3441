@@ -7,19 +7,19 @@
 
 #define STACK_SIZE 1024
 #define PRIORITY_PADEIRO 5
-#define PRIORITY_CLIENTE 5
+#define PRIORITY_CLIENTE 2
 
 volatile int saldo_vitrine = 0;
 
-K_MUTEX_DEFINE(print_mutex);
+K_MUTEX_DEFINE(vitrine_mutex);
 
 void padeiro(void *arg1, void *arg2, void *arg3) {
     while(1){
-        k_msleep(1000);
-        k_mutex_lock(&print_mutex, K_FOREVER);
+        k_msleep(1500);
+        k_mutex_lock(&vitrine_mutex, K_FOREVER);
         saldo_vitrine++;
         printk("O saldo da vitrine e: %d\n", saldo_vitrine);
-        k_mutex_unlock(&print_mutex);
+        k_mutex_unlock(&vitrine_mutex);
     }
      
 }
@@ -31,11 +31,11 @@ K_THREAD_DEFINE(padeiro_thread, STACK_SIZE, padeiro,
 
 void cliente(void *arg1, void *arg2, void *arg3) {
     while(1){
-        k_msleep(1500);
-        k_mutex_lock(&print_mutex, K_FOREVER);
+        k_msleep(1000);
+        k_mutex_lock(&vitrine_mutex, K_FOREVER);
         saldo_vitrine--;
         printk("O saldo da vitrine e: %d\n", saldo_vitrine);
-        k_mutex_unlock(&print_mutex);
+        k_mutex_unlock(&vitrine_mutex);
     }
 
 }
