@@ -1,1 +1,0 @@
-"mcuboot":"C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/bootloader/mcuboot":"C:/Users/Aluno/.platformio/packages/framework-zephyr/_pio/bootloader/mcuboot/boot/zephyr/sysbuild"
